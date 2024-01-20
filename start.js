@@ -19,10 +19,12 @@ async function performSearch() {
     }
 }
 
+const loader = document.getElementById('loader');
 async function fetchUserData(username) {
+    loader.style.display = 'block';
     const apiUrl = `https://api.github.com/users/${username}`;
     const response = await fetch(apiUrl);
-
+    loader.style.display = 'none';
     if (response.ok) {
         return await response.json();
     } else {
@@ -31,22 +33,23 @@ async function fetchUserData(username) {
     }
 }
 
+const loaderResult = document.getElementById('loaderResult');
 async function fetchRepositories(username, page = 1, perPage = 10) {
-    console.log(page)
+    loaderResult.style.display = 'block';
     const apiUrl = `https://api.github.com/users/${username}/repos?per_page=${perPage}&page=${page}`;
     const response = await fetch(apiUrl);
-
     if (response.ok) {
         const data = await response.json();
         repositories = []
         repositories = repositories.concat(data)
-        console.log(repositories, repositories.length)
+        // console.log(repositories, repositories.length)
         displayPage(page, username, repositories)
     } else {
         console.log("some error")
         console.error('Error fetching repositories:', response.status);
         return [];
     }
+    loaderResult.style.display = 'none';
 }
 
 
@@ -66,7 +69,6 @@ async function displayResults(userData) {
     resultItem.classList.add('result-item');
     resultItem.innerHTML = avatar + userInfo;
     resultsContainer.appendChild(resultItem);
-
     repositories = await fetchRepositories(userData.login);
 }
 
